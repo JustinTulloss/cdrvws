@@ -21,10 +21,23 @@ const HELP string = `
 cdrvws(1)                          CDRV.WS                          cdrvws(1)
 
 NAME
-    cdrvws: command line url shortener:
+    cdrvws: command line url shortener
 
 SYNOPSIS
     &lt;command&gt; | curl -F 'rvw=<-' http://cdrv.ws
+
+EXAMPLE
+    ~$ echo "http://ebushpilot.com/images/polarbear_1.jpg" | curl -F 'rvw=<-' http://cdrv.ws
+    http://cdrv.ws/2
+    ~$ open http://cdrv.ws/2
+
+
+SEE ALSO
+    http://github.com/JustinTulloss/cdrvws
+
+CREDITS
+    Inspired by <a href="http://sprunge.us">sprunge</a>:
+    http://github.com/rupa/sprunge
         </pre>
     </body>
 </html>`
