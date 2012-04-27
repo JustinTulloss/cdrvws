@@ -35,7 +35,7 @@ const BASE uint64 = uint64(len(CHARS))
 var redis *godis.Client
 
 func main() {
-	redis = godis.New(os.Getenv("REDISTOGO_URL"), 0, "")
+	connectToRedis()
 	http.HandleFunc("/", route)
 	startServer()
 }
@@ -69,6 +69,22 @@ func expand(shorturl string) (error, string) {
 		return err, ""
 	}
 	return nil, longurl.String()
+}
+
+func connectToRedis() {
+	rawurl := os.Getenv("REDISTOGO_URL")
+	redisurl := url.URL{
+		User: url.UserPassword("", ""),
+	}
+	if rawurl != "" {
+		var err error
+		_, err = (&redisurl).Parse(rawurl)
+		if err != nil {
+			log.Fatal("Could not parse redis url", err)
+		}
+	}
+	password, _ := redisurl.User.Password()
+	redis = godis.New(redisurl.Host, 0, password)
 }
 
 func startServer() {
