@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"github.com/simonz05/godis"
 )
 
 const HELP string = `
@@ -31,11 +32,10 @@ SYNOPSIS
 const CHARS string = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const BASE uint64 = uint64(len(CHARS))
 
-var shortid uint64 = 1 // We don't allow an id at 0
-var shorturls map[string]string
+var redis *godis.Client
 
 func main() {
-	shorturls = make(map[string]string)
+	redis = godis.New("", 0, "")
 	http.HandleFunc("/", route)
 	startServer()
 }
@@ -50,15 +50,25 @@ func encode(id uint64) string {
 }
 
 func createShortUrl(longurl string) (error, string) {
-	shorturl := encode(shortid)
-	shortid++
-	shorturls[shorturl] = longurl
+	shortid, err := redis.Incr("urlId")
+	if err != nil {
+		return err, ""
+	}
+	shorturl := encode(uint64(shortid))
+	if err := redis.Set(shorturl, longurl); err != nil {
+		return err, ""
+	}
 	return nil, shorturl
 }
 
 func expand(shorturl string) (error, string) {
-	longurl, _ := shorturls[shorturl]
-	return nil, longurl
+	longurl, err := redis.Get(shorturl)
+	if err != nil && err.Error() == "Nonexisting key" {
+		return nil, ""
+	} else if err != nil {
+		return err, ""
+	}
+	return nil, longurl.String()
 }
 
 func startServer() {
