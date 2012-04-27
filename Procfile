@@ -1,1 +1,1 @@
-web: ./cdrvws
+web: cdrvws
