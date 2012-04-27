@@ -35,7 +35,7 @@ const BASE uint64 = uint64(len(CHARS))
 var redis *godis.Client
 
 func main() {
-	redis = godis.New("", 0, "")
+	redis = godis.New(os.Getenv("REDISTOGO_URL"), 0, "")
 	http.HandleFunc("/", route)
 	startServer()
 }
@@ -72,7 +72,7 @@ func expand(shorturl string) (error, string) {
 }
 
 func startServer() {
-	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	err := http.ListenAndServe(":" + os.Getenv("PORT"), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
