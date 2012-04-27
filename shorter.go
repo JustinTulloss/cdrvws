@@ -73,6 +73,7 @@ func expand(shorturl string) (error, string) {
 
 func connectToRedis() {
 	rawurl := os.Getenv("REDISTOGO_URL")
+	log.Printf("Redis to go url: %s\n", rawurl)
 	redisurl := url.URL{
 		User: url.UserPassword("", ""),
 	}
@@ -84,11 +85,17 @@ func connectToRedis() {
 		}
 	}
 	password, _ := redisurl.User.Password()
+	log.Printf("Connecting to redis: %s\n", redisurl.String())
 	redis = godis.New(redisurl.Host, 0, password)
 }
 
 func startServer() {
-	err := http.ListenAndServe(":" + os.Getenv("PORT"), nil)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Printf("Starting on %s\n", port)
+	err := http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
