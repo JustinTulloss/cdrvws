@@ -75,6 +75,7 @@ func connectToRedis() {
 	rawurl := os.Getenv("REDISTOGO_URL")
 	log.Printf("Redis to go url: %s\n", rawurl)
 	redisurl := url.URL{
+		Host: "localhost:6379",
 		User: url.UserPassword("", ""),
 	}
 	parsedurl := &redisurl
@@ -87,7 +88,7 @@ func connectToRedis() {
 	}
 	password, _ := parsedurl.User.Password()
 	log.Printf("Connecting to redis: '%s' with password '%s'\n", parsedurl.Host, password)
-	redis = godis.New(parsedurl.Host, 0, password)
+	redis = godis.New("tcp:" + parsedurl.Host, 0, password)
 }
 
 func startServer() {
