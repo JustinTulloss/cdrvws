@@ -86,7 +86,7 @@ func connectToRedis() {
 		}
 	}
 	password, _ := parsedurl.User.Password()
-	log.Printf("Connecting to redis: %s\n", parsedurl.String())
+	log.Printf("Connecting to redis: '%s' with password '%s'\n", parsedurl.Host, password)
 	redis = godis.New(parsedurl.Host, 0, password)
 }
 
