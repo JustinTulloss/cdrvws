@@ -85,7 +85,11 @@ func handleHome(w http.ResponseWriter, req *http.Request) {
 }
 
 func handleShorten(w http.ResponseWriter, req *http.Request) {
-    _, shorturl := createShortUrl(req.FormValue("rvw"))
+    err, shorturl := createShortUrl(req.FormValue("rvw"))
+    if (err != nil) {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
     fullurl := url.URL{
         Scheme: "http",
         Host: req.Host,
@@ -96,11 +100,13 @@ func handleShorten(w http.ResponseWriter, req *http.Request) {
 
 func handleExpand(w http.ResponseWriter, req *http.Request) {
     shorturl := strings.Trim(req.URL.String(), "/")
-    _, longurl := expand(shorturl)
-    if (longurl == "") {
+    err, longurl := expand(shorturl)
+    if (err != nil) {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+    } else if (longurl == "") {
         http.NotFound(w, req)
     } else {
-        http.Redirect(w, req, longurl, 301)
+        http.Redirect(w, req, longurl, http.StatusMovedPermanently)
     }
 }
 
