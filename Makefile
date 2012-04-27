@@ -4,3 +4,6 @@ build:
 
 serve: build
 	foreman start
+
+deploy:
+	git push heroku master
