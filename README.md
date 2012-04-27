@@ -12,6 +12,11 @@ Install dependencies.
 - [Go](http://golang.org/doc/install)
 - [Heroku Toolbelt](https://toolbelt.heroku.com/)
 - Set up your environment [The Go Way](http://golang.org/doc/code.html)
+- [Redis](http://redis.io/download)
+
+Start redis in one tab with the default config:
+
+    redis-server
 
 Clone the code and run:
 
