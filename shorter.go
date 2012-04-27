@@ -77,16 +77,17 @@ func connectToRedis() {
 	redisurl := url.URL{
 		User: url.UserPassword("", ""),
 	}
+	parsedurl := &redisurl
 	if rawurl != "" {
 		var err error
-		_, err = (&redisurl).Parse(rawurl)
+		parsedurl, err = parsedurl.Parse(rawurl)
 		if err != nil {
 			log.Fatal("Could not parse redis url", err)
 		}
 	}
-	password, _ := redisurl.User.Password()
-	log.Printf("Connecting to redis: %s\n", redisurl.String())
-	redis = godis.New(redisurl.Host, 0, password)
+	password, _ := parsedurl.User.Password()
+	log.Printf("Connecting to redis: %s\n", parsedurl.String())
+	redis = godis.New(parsedurl.Host, 0, password)
 }
 
 func startServer() {
