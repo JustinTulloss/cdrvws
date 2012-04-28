@@ -3,12 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
-	"net/url"
 	"os"
 	"strings"
-	"github.com/simonz05/godis"
 	"path"
+	"regexp"
+	"net/http"
+	"net/url"
+	"encoding/base64"
+	"encoding/binary"
+	"github.com/simonz05/godis"
 )
 
 const HELP string = `cdrvws(1)                          CDRV.WS                          cdrvws(1)
@@ -33,24 +36,21 @@ SEE ALSO
 CREDITS
     Inspired by sprunge: http://github.com/rupa/sprunge`
 
-const CHARS string = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-const BASE uint64 = uint64(len(CHARS))
-
 var redis *godis.Client
+var trimmer *regexp.Regexp
 
 func main() {
 	connectToRedis()
 	http.HandleFunc("/", route)
+	trimmer, _ = regexp.Compile("A+=$")
 	startServer()
 }
 
 func encode(id uint64) string {
-	encoded := ""
-	for id > 0 {
-		encoded += string(CHARS[id%BASE])
-		id = id / BASE
-	}
-	return encoded
+	bytes := make([]byte, 8)
+	binary.PutUvarint(bytes, id)
+	encoded := base64.URLEncoding.EncodeToString([]byte(bytes))
+	return trimmer.ReplaceAllLiteralString(encoded, "")
 }
 
 func createShortUrl(longurl string) (error, string) {
