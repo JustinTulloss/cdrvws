@@ -10,21 +10,13 @@ import (
 	"github.com/simonz05/godis"
 )
 
-const HELP string = `
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>cdrv.ws</title>
-    </head>
-    <body>
-        <pre>
-cdrvws(1)                          CDRV.WS                          cdrvws(1)
+const HELP string = `cdrvws(1)                          CDRV.WS                          cdrvws(1)
 
 NAME
     cdrvws: command line url shortener
 
 SYNOPSIS
-    &lt;command&gt; | curl -F 'rvw=<-' http://cdrv.ws
+    <command> | curl -F 'rvw=<-' http://cdrv.ws
 
 EXAMPLE
     ~$ echo "http://ebushpilot.com/images/polarbear_1.jpg" | curl -F 'rvw=<-' http://cdrv.ws
@@ -36,11 +28,8 @@ SEE ALSO
     http://github.com/JustinTulloss/cdrvws
 
 CREDITS
-    Inspired by <a href="http://sprunge.us">sprunge</a>:
-    http://github.com/rupa/sprunge
-        </pre>
-    </body>
-</html>`
+    Inspired by sprunge: http://github.com/rupa/sprunge
+`
 
 const CHARS string = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const BASE uint64 = uint64(len(CHARS))
@@ -129,6 +118,7 @@ func route(w http.ResponseWriter, req *http.Request) {
 }
 
 func handleHome(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "text/plain")
 	fmt.Fprintln(w, HELP)
 }
 
