@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"github.com/simonz05/godis"
+	"path"
 )
 
 const HELP string = `cdrvws(1)                          CDRV.WS                          cdrvws(1)
@@ -23,13 +24,14 @@ EXAMPLE
     http://cdrv.ws/2
     ~$ open http://cdrv.ws/2
 
+AUTHOR
+    Justin Tulloss <justin.tulloss at gmail>
 
 SEE ALSO
     http://github.com/JustinTulloss/cdrvws
 
 CREDITS
-    Inspired by sprunge: http://github.com/rupa/sprunge
-`
+    Inspired by sprunge: http://github.com/rupa/sprunge`
 
 const CHARS string = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const BASE uint64 = uint64(len(CHARS))
@@ -138,12 +140,21 @@ func handleShorten(w http.ResponseWriter, req *http.Request) {
 
 func handleExpand(w http.ResponseWriter, req *http.Request) {
 	shorturl := strings.Trim(req.URL.String(), "/")
+	suffix := ""
+	if strings.ContainsRune(shorturl, '/') {
+		shorturl, suffix = path.Split(shorturl)
+		if shorturl == "" {
+			shorturl = suffix
+			suffix = ""
+		}
+	}
+	shorturl = strings.Trim(shorturl, "/")
 	err, longurl := expand(shorturl)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	} else if longurl == "" {
 		http.NotFound(w, req)
 	} else {
-		http.Redirect(w, req, longurl, http.StatusMovedPermanently)
+		http.Redirect(w, req, path.Join(longurl, suffix), http.StatusMovedPermanently)
 	}
 }
