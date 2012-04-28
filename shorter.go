@@ -1,17 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"strings"
-	"path"
-	"regexp"
-	"net/http"
-	"net/url"
 	"encoding/base64"
 	"encoding/binary"
+	"fmt"
 	"github.com/simonz05/godis"
+	"log"
+	"net/http"
+	"net/url"
+	"os"
+	"path"
+	"regexp"
+	"strings"
 )
 
 const HELP string = `cdrvws(1)                          CDRV.WS                          cdrvws(1)
@@ -92,7 +92,7 @@ func connectToRedis() {
 	}
 	password, _ := parsedurl.User.Password()
 	log.Printf("Connecting to redis: '%s' with password '%s'\n", parsedurl.Host, password)
-	redis = godis.New("tcp:" + parsedurl.Host, 0, password)
+	redis = godis.New("tcp:"+parsedurl.Host, 0, password)
 }
 
 func startServer() {
@@ -101,7 +101,7 @@ func startServer() {
 		port = "8080"
 	}
 	log.Printf("Starting on %s\n", port)
-	err := http.ListenAndServe(":" + port, nil)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
@@ -158,6 +158,6 @@ func handleExpand(w http.ResponseWriter, req *http.Request) {
 		if !strings.HasSuffix(longurl, "/") {
 			longurl += "/"
 		}
-		http.Redirect(w, req, longurl + suffix, http.StatusMovedPermanently)
+		http.Redirect(w, req, longurl+suffix, http.StatusMovedPermanently)
 	}
 }
