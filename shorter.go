@@ -155,6 +155,9 @@ func handleExpand(w http.ResponseWriter, req *http.Request) {
 	} else if longurl == "" {
 		http.NotFound(w, req)
 	} else {
-		http.Redirect(w, req, path.Join(longurl, suffix), http.StatusMovedPermanently)
+		if !strings.HasSuffix(longurl, "/") {
+			longurl += "/"
+		}
+		http.Redirect(w, req, longurl + suffix, http.StatusMovedPermanently)
 	}
 }
